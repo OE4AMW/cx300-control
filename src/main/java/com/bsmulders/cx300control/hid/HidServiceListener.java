@@ -13,18 +13,23 @@ import org.hid4java.event.HidServicesEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class HidServiceListener implements HidServicesListener {
 
-    private static final Integer VENDOR_ID = 0x95d;
-    private static final Integer PRODUCT_ID = 0xffff9201;
     private static final Logger LOGGER = LoggerFactory.getLogger(HidServicesListener.class);
 
     private final HidDeviceCommunicator hidDeviceCommunicator;
 
     private HidServices hidServices;
+
+    @Value("${usb.vendor.id}")
+    private int vendorId;
+
+    @Value("${usb.product.id}")
+    private int productId;
 
     @Autowired
     public HidServiceListener(HidDeviceCommunicator hidDeviceCommunicator) {
@@ -43,7 +48,7 @@ public class HidServiceListener implements HidServicesListener {
         hidServices.addHidServicesListener(this);
         hidServices.start();
 
-        HidDevice hidDevice = hidServices.getHidDevice(VENDOR_ID, PRODUCT_ID, null);
+        HidDevice hidDevice = hidServices.getHidDevice(vendorId, productId, null);
         if (hidDevice != null) {
             hidDeviceCommunicator.setHidDevice(hidDevice);
         }
@@ -59,9 +64,9 @@ public class HidServiceListener implements HidServicesListener {
         LOGGER.info("USB HID device attached: {}", event);
 
         if (event.getHidDevice()
-                 .getVendorId() == VENDOR_ID
+                 .getVendorId() == vendorId
             && event.getHidDevice()
-                    .getProductId() == PRODUCT_ID) {
+                    .getProductId() == productId) {
             hidDeviceCommunicator.setHidDevice(event.getHidDevice());
         }
     }
