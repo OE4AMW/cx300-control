@@ -13,7 +13,8 @@ public class HidDeviceCommunicator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HidDeviceCommunicator.class);
     private static final int PACKET_LENGTH = 8;
-    private static final byte[] USB_INITIAL = new byte[]{0x17, 0x09, 0x04, 0x01, 0x02};
+    private static final byte[] USB_INITIAL = new byte[]{0x09, 0x04, 0x01, 0x02};
+    private static final byte REPORT_ID = 0x17;
 
     private final HidDeviceReceiver hidDeviceReceiver;
 
@@ -30,7 +31,7 @@ public class HidDeviceCommunicator {
         }
 
         this.hidDevice = hidDevice;
-        getFeatureReport(USB_INITIAL);
+        sendFeatureReport(USB_INITIAL, REPORT_ID);
         hidDeviceReceiver.start(hidDevice);
     }
 
@@ -56,7 +57,7 @@ public class HidDeviceCommunicator {
         waitForData();
     }
 
-    public void getFeatureReport(byte[] data) {
+    public void sendFeatureReport(byte[] data, byte reportid) {
         if (hidDevice == null) {
             LOGGER.warn("Not sending data because HidDevice is not set: {}", DatatypeConverter.printHexBinary(data));
             return;
@@ -66,7 +67,7 @@ public class HidDeviceCommunicator {
             hidDevice.open();
         }
 
-        int val = hidDevice.getFeatureReport(data, (byte) 0x00);
+        int val = hidDevice.sendFeatureReport(data, reportid);
         if (val < 0) {
             LOGGER.error(hidDevice.getLastErrorMessage());
         }
