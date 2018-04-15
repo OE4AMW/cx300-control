@@ -6,7 +6,7 @@ import static java.util.stream.Collectors.toMap;
 import java.util.Map;
 
 public enum CX300MuteType {
-    UNMUTED("00"),
+    NOT_MUTED("00"),
     MUTED("01");
 
     private static final Map<String, CX300MuteType> MAP =

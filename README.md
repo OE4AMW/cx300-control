@@ -2,7 +2,7 @@
 
 This project is a demo application for controlling a Polycom CX300 USB phone using the USB HID protocol. It can intercept keypresses, audio state and set the display text. 
 
-Detailed protocol specifications can be found at my blog post:
+Detailed protocol specifications can be found at my blog post: [Reverse engineering the Polycom CX300 USB phone](https://bsmulders.com/2018/04/polycom-cx300/)
 
 ## Usage
 
