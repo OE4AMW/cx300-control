@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class CX300Display {
 
+    private static final byte[] DISPLAY_CLEAR = new byte[]{0x13, 0x00};
     private static final byte[] INITIALISE_CORNERS = new byte[]{0x13, 0x0d};
     private static final byte[] INITIALISE_FULL = new byte[]{0x13, 0x15}; // 0x15
     private static final byte[] DISPLAY_TOP_LEFT = new byte[]{0x14, 0x01, (byte) 0x80};
@@ -18,7 +19,6 @@ public class CX300Display {
     private static final byte[] DISPLAY_BOTTOM_RIGHT = new byte[]{0x14, 0x04, (byte) 0x80};
     private static final byte[] DISPLAY_TOP = new byte[]{0x14, 0x05, (byte) 0x80};
     private static final byte[] DISPLAY_BOTTOM = new byte[]{0x14, 0x0a, (byte) 0x80};
-    private static final byte[] DISPLAY_RESET = new byte[]{0x15, 0x00};
     private static final byte[] TEMPLATE_MIDDLE = new byte[]{
             0x15, 0x00, 0x30, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
@@ -87,8 +87,8 @@ public class CX300Display {
         hidDeviceCommunicator.sendMessage(createEndMessage(bottomRightPadded.substring(8, 16)));
     }
 
-    public void reset() {
-        hidDeviceCommunicator.sendMessage(DISPLAY_RESET);
+    public void clear() {
+        hidDeviceCommunicator.sendMessage(DISPLAY_CLEAR);
     }
 
     private byte[] createMiddleMessage(String input) {

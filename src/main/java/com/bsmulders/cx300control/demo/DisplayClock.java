@@ -4,6 +4,8 @@ import static java.time.format.DateTimeFormatter.ISO_LOCAL_TIME;
 
 import java.time.LocalTime;
 
+import javax.annotation.PreDestroy;
+
 import com.bsmulders.cx300control.cx300.control.CX300Display;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +26,11 @@ public class ScheduledClock {
     public void displayClock() {
         LocalTime now = LocalTime.now().withNano(0);
 
-        cx300Display.reset();
         cx300Display.setText("Time: ", now.format(ISO_LOCAL_TIME));
+    }
+
+    @PreDestroy
+    public void clearScreen() {
+        cx300Display.clear();
     }
 }
