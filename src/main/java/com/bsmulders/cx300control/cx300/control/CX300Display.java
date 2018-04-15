@@ -1,8 +1,9 @@
 package com.bsmulders.cx300control.cx300.control;
 
-import java.util.Arrays;
+import java.util.Iterator;
 
 import com.bsmulders.cx300control.hid.HidDeviceCommunicator;
+import com.google.common.base.Splitter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -10,23 +11,24 @@ import org.springframework.stereotype.Component;
 @Component
 public class CX300Display {
 
-    private static final byte[] DISPLAY_CLEAR = new byte[]{0x13, 0x00};
-    private static final byte[] INITIALISE_CORNERS = new byte[]{0x13, 0x0d};
-    private static final byte[] INITIALISE_FULL = new byte[]{0x13, 0x15}; // 0x15
-    private static final byte[] DISPLAY_TOP_LEFT = new byte[]{0x14, 0x01, (byte) 0x80};
-    private static final byte[] DISPLAY_BOTTOM_LEFT = new byte[]{0x14, 0x02, (byte) 0x80};
-    private static final byte[] DISPLAY_TOP_RIGHT = new byte[]{0x14, 0x03, (byte) 0x80};
-    private static final byte[] DISPLAY_BOTTOM_RIGHT = new byte[]{0x14, 0x04, (byte) 0x80};
-    private static final byte[] DISPLAY_TOP = new byte[]{0x14, 0x05, (byte) 0x80};
-    private static final byte[] DISPLAY_BOTTOM = new byte[]{0x14, 0x0a, (byte) 0x80};
-    private static final byte[] TEMPLATE_MIDDLE = new byte[]{
-            0x15, 0x00, 0x30, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-    };
-    private static final byte[] TEMPLATE_END = new byte[]{
-            0x15, (byte) 0x80, 0x30, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-    };
+    private static final byte INITIALISE_GROUP = 0x13;
+    private static final byte POSITION_GROUP = 0x14;
+    private static final byte TEXT_GROUP = 0x15;
+
+    private static final byte TEXT_MESSAGE = (byte) 0x00;
+    private static final byte TEXT_MESSAGE_END = (byte) 0x80;
+    private static final byte POSITION_END = (byte) 0x80;
+
+    public static final byte INITIALISE_CLEAR = 0x00;
+    public static final byte INITIALISE_CORNERS = 0x0d;
+    public static final byte INITIALISE_DOUBLE = 0x15;
+
+    public static final byte POSITION_TOP_LEFT = 0x01;
+    public static final byte POSITION_BOTTOM_LEFT = 0x02;
+    public static final byte POSITION_TOP_RIGHT = 0x03;
+    public static final byte POSITION_BOTTOM_RIGHT = 0x04;
+    public static final byte POSITION_TOP = 0x05;
+    public static final byte POSITION_BOTTOM = 0x0a;
 
     private final HidDeviceCommunicator hidDeviceCommunicator;
 
@@ -35,27 +37,38 @@ public class CX300Display {
         this.hidDeviceCommunicator = hidDeviceCommunicator;
     }
 
+    public void initialise(byte initialise) {
+        hidDeviceCommunicator.sendMessage(new byte[]{INITIALISE_GROUP, initialise});
+    }
+
+    public void setPosition(byte position) {
+        hidDeviceCommunicator.sendMessage(new byte[]{POSITION_GROUP, position, POSITION_END});
+    }
+
+    public void writeText(String text) {
+        for (Iterator<String> parts = Splitter.fixedLength(8)
+                                              .split(text)
+                                              .iterator(); parts.hasNext(); ) {
+            String part = parts.next();
+            byte type = parts.hasNext() ? TEXT_MESSAGE : TEXT_MESSAGE_END;
+            hidDeviceCommunicator.sendMessage(createMessage(part, type));
+        }
+    }
+
+    public void clear() {
+        hidDeviceCommunicator.sendMessage(new byte[]{INITIALISE_GROUP, INITIALISE_CLEAR});
+    }
+
     public void setText(String top, String bottom) {
         if (top.length() > 28 || bottom.length() > 28) {
             throw new IllegalArgumentException();
         }
 
-        String topPadded = String.format("%-28s", top);
-        String bottomPadded = String.format("%-28s", bottom);
-
-        hidDeviceCommunicator.sendMessage(INITIALISE_FULL);
-
-        hidDeviceCommunicator.sendMessage(DISPLAY_TOP);
-        hidDeviceCommunicator.sendMessage(createMiddleMessage(topPadded.substring(0, 8)));
-        hidDeviceCommunicator.sendMessage(createMiddleMessage(topPadded.substring(8, 16)));
-        hidDeviceCommunicator.sendMessage(createMiddleMessage(topPadded.substring(16, 24)));
-        hidDeviceCommunicator.sendMessage(createEndMessage(topPadded.substring(24, 28)));
-
-        hidDeviceCommunicator.sendMessage(DISPLAY_BOTTOM);
-        hidDeviceCommunicator.sendMessage(createMiddleMessage(bottomPadded.substring(0, 8)));
-        hidDeviceCommunicator.sendMessage(createMiddleMessage(bottomPadded.substring(8, 16)));
-        hidDeviceCommunicator.sendMessage(createMiddleMessage(bottomPadded.substring(16, 24)));
-        hidDeviceCommunicator.sendMessage(createEndMessage(bottomPadded.substring(24, 28)));
+        initialise(INITIALISE_DOUBLE);
+        setPosition(POSITION_TOP);
+        writeText(top);
+        setPosition(POSITION_BOTTOM);
+        writeText(bottom);
     }
 
     public void setText(String topLeft, String bottomLeft, String topRight, String bottomRight) {
@@ -63,45 +76,27 @@ public class CX300Display {
             throw new IllegalArgumentException();
         }
 
-        String topLeftPadded = String.format("%-16s", topLeft);
-        String bottomLeftPadded = String.format("%-16s", bottomLeft);
-        String topRightPadded = String.format("%16s", topRight);
-        String bottomRightPadded = String.format("%16s", bottomRight);
-
-        hidDeviceCommunicator.sendMessage(INITIALISE_CORNERS);
-
-        hidDeviceCommunicator.sendMessage(DISPLAY_TOP_LEFT);
-        hidDeviceCommunicator.sendMessage(createMiddleMessage(topLeftPadded.substring(0, 8)));
-        hidDeviceCommunicator.sendMessage(createEndMessage(topLeftPadded.substring(8, 16)));
-
-        hidDeviceCommunicator.sendMessage(DISPLAY_BOTTOM_LEFT);
-        hidDeviceCommunicator.sendMessage(createMiddleMessage(bottomLeftPadded.substring(0, 8)));
-        hidDeviceCommunicator.sendMessage(createEndMessage(bottomLeftPadded.substring(8, 16)));
-
-        hidDeviceCommunicator.sendMessage(DISPLAY_TOP_RIGHT);
-        hidDeviceCommunicator.sendMessage(createMiddleMessage(topRightPadded.substring(0, 8)));
-        hidDeviceCommunicator.sendMessage(createEndMessage(topRightPadded.substring(8, 16)));
-
-        hidDeviceCommunicator.sendMessage(DISPLAY_BOTTOM_RIGHT);
-        hidDeviceCommunicator.sendMessage(createMiddleMessage(bottomRightPadded.substring(0, 8)));
-        hidDeviceCommunicator.sendMessage(createEndMessage(bottomRightPadded.substring(8, 16)));
+        initialise(INITIALISE_CORNERS);
+        setPosition(POSITION_TOP_LEFT);
+        writeText(topLeft);
+        setPosition(POSITION_BOTTOM_LEFT);
+        writeText(bottomLeft);
+        setPosition(POSITION_TOP_RIGHT);
+        writeText(topRight);
+        setPosition(POSITION_BOTTOM_RIGHT);
+        writeText(bottomRight);
     }
 
-    public void clear() {
-        hidDeviceCommunicator.sendMessage(DISPLAY_CLEAR);
+    private byte[] createMessage(String input, byte type) {
+        byte[] template = new byte[18];
+        template[0] = TEXT_GROUP;
+        template[1] = type;
+        fillTemplate(template, input);
+
+        return template;
     }
 
-    private byte[] createMiddleMessage(String input) {
-        byte[] message = Arrays.copyOf(TEMPLATE_MIDDLE, TEMPLATE_MIDDLE.length);
-        return createMessage(input, message);
-    }
-
-    private byte[] createEndMessage(String input) {
-        byte[] message = Arrays.copyOf(TEMPLATE_END, TEMPLATE_END.length);
-        return createMessage(input, message);
-    }
-
-    private byte[] createMessage(String input, byte[] template) {
+    private void fillTemplate(byte[] template, String input) {
         if (input.length() <= 8) {
             byte[] inputBytes = input.getBytes();
             byte[] spacedBytes = new byte[inputBytes.length * 2];
@@ -112,7 +107,5 @@ public class CX300Display {
 
             System.arraycopy(spacedBytes, 0, template, 2, spacedBytes.length);
         }
-
-        return template;
     }
 }
