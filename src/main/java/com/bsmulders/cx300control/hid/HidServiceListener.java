@@ -7,8 +7,6 @@ import org.hid4java.HidDevice;
 import org.hid4java.HidManager;
 import org.hid4java.HidServices;
 import org.hid4java.HidServicesListener;
-import org.hid4java.HidServicesSpecification;
-import org.hid4java.ScanMode;
 import org.hid4java.event.HidServicesEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,13 +36,7 @@ public class HidServiceListener implements HidServicesListener {
 
     @PostConstruct
     public void setup() {
-        HidServicesSpecification hidServicesSpecification = new HidServicesSpecification();
-        hidServicesSpecification.setAutoShutdown(true);
-        hidServicesSpecification.setScanInterval(500);
-        hidServicesSpecification.setPauseInterval(5000);
-        hidServicesSpecification.setScanMode(ScanMode.SCAN_AT_FIXED_INTERVAL_WITH_PAUSE_AFTER_WRITE);
-
-        hidServices = HidManager.getHidServices(hidServicesSpecification);
+        hidServices = HidManager.getHidServices();
         hidServices.addHidServicesListener(this);
         hidServices.start();
 

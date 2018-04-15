@@ -8,13 +8,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class CX300Led {
 
-    private static final byte[] STATUS_LED_OFF          = new byte[]{0x16, 0x00};
-    private static final byte[] STATUS_LED_GREEN        = new byte[]{0x16, 0x01};
-    private static final byte[] STATUS_LED_RED          = new byte[]{0x16, 0x03};
-    private static final byte[] STATUS_LED_YELLOW_RED   = new byte[]{0x16, 0x04};
-    private static final byte[] STATUS_LED_YELLOW       = new byte[]{0x16, 0x05};
-    private static final byte[] SPEAKERPHONE_LED_OFF    = new byte[]{0x02, 0x00};
-    private static final byte[] SPEAKERPHONE_LED_ON     = new byte[]{0x02, 0x01};
+    private static final byte[] STATUS_LED_OFF = new byte[]{0x16, 0x00};
+    private static final byte[] STATUS_LED_GREEN = new byte[]{0x16, 0x01};
+    private static final byte[] STATUS_LED_RED = new byte[]{0x16, 0x03};
+    private static final byte[] STATUS_LED_YELLOW_RED = new byte[]{0x16, 0x04};
+    private static final byte[] STATUS_LED_YELLOW = new byte[]{0x16, 0x05};
+    private static final byte[] SPEAKERPHONE_LED_OFF = new byte[]{0x02, 0x00};
+    private static final byte[] SPEAKERPHONE_LED_ON = new byte[]{0x02, 0x01};
 
     private final HidDeviceCommunicator hidDeviceCommunicator;
 

@@ -13,18 +13,19 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ScheduledClock {
+public class DisplayClock {
 
     private final CX300Display cx300Display;
 
     @Autowired
-    public ScheduledClock(CX300Display cx300Display) {
+    public DisplayClock(CX300Display cx300Display) {
         this.cx300Display = cx300Display;
     }
 
     @Scheduled(fixedRate = 1000)
     public void displayClock() {
-        LocalTime now = LocalTime.now().withNano(0);
+        LocalTime now = LocalTime.now()
+                                 .withNano(0);
 
         cx300Display.setText("Time: ", now.format(ISO_LOCAL_TIME));
     }

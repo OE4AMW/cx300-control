@@ -10,4 +10,4 @@ To start the project, use the spring-boot-maven-plugin in the terminal:
 
     mvn spring-boot:run
 
-The application will start and display a clock on the plugged-in Polycom CX300 phone. Keypresses and audio state are writen to the console.
+The application will start and display a clock on the plugged-in Polycom CX300 phone. Keypresses and audio state are written to the console.

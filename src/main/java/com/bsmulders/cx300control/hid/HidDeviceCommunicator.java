@@ -41,7 +41,7 @@ public class HidDeviceCommunicator {
 
     public void sendMessage(byte[] data) {
         if (hidDevice == null) {
-            LOGGER.warn("Not sending data because HidDevice is not set: {}", DatatypeConverter.printHexBinary(data));
+            LOGGER.debug("Not sending data because HidDevice is not set: {}", DatatypeConverter.printHexBinary(data));
             return;
         }
 
@@ -59,7 +59,7 @@ public class HidDeviceCommunicator {
 
     public void sendFeatureReport(byte[] data, byte reportid) {
         if (hidDevice == null) {
-            LOGGER.warn("Not sending data because HidDevice is not set: {}", DatatypeConverter.printHexBinary(data));
+            LOGGER.debug("Not sending data because HidDevice is not set: {}", DatatypeConverter.printHexBinary(data));
             return;
         }
 
@@ -77,10 +77,10 @@ public class HidDeviceCommunicator {
 
     private void waitForData() {
         boolean moreData = true;
-        int val = 0;
+
         while (moreData) {
             byte[] data = new byte[PACKET_LENGTH];
-            val = hidDevice.read(data, 1);
+            int val = hidDevice.read(data, 1);
             switch (val) {
                 case -1:
                     LOGGER.error(hidDevice.getLastErrorMessage());
