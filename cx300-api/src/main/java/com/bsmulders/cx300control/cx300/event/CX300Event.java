@@ -41,16 +41,18 @@ public class CX300Event extends ApplicationEvent {
     private final String data;
     private final Key key;
     private final boolean audioEnabled;
+    private final boolean audioInEnabled;
     private final AudioDevice audioDevice;
     private final int volume;
     private final boolean muted;
 
-    public CX300Event(Object source, String data, Key key, boolean audioEnabled,
+    public CX300Event(Object source, String data, Key key, boolean audioEnabled, boolean audioInEnabled,
                       AudioDevice audioDevice, int volume, boolean muted) {
         super(source);
         this.data = data;
         this.key = key;
         this.audioEnabled = audioEnabled;
+        this.audioInEnabled = audioInEnabled;
         this.audioDevice = audioDevice;
         this.volume = volume;
         this.muted = muted;

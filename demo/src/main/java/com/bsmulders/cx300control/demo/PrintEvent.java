@@ -17,6 +17,7 @@ public class PrintEvent implements ApplicationListener<CX300Event> {
         LOGGER.info("HID Data: {}", cx300Event.getData());
         LOGGER.info("Key: {}", cx300Event.getKey());
         LOGGER.info("Audio enabled: {}", cx300Event.isAudioEnabled());
+        LOGGER.info("Audio In enabled: {}", cx300Event.isAudioInEnabled());
         LOGGER.info("Audio device: {}", cx300Event.getAudioDevice());
         LOGGER.info("Volume: {}", cx300Event.getVolume());
         LOGGER.info("Muted: {}", cx300Event.isMuted());
