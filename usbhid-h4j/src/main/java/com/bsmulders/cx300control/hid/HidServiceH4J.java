@@ -4,6 +4,7 @@ import javax.annotation.PostConstruct;
 import javax.xml.bind.DatatypeConverter;
 
 import com.bsmulders.cx300control.hid.event.HidConnectedEvent;
+import com.bsmulders.cx300control.hid.event.HidDataEvent;
 import com.bsmulders.cx300control.hid.event.HidDataEventDistributor;
 
 import org.hid4java.HidDevice;
@@ -130,7 +131,15 @@ public class HidServiceH4J implements HidService, HidServicesListener {
                     moreData = false;
                     break;
                 default:
-                    LOGGER.warn("Did not expect data at this point: {}", DatatypeConverter.printHexBinary(data));
+                    LOGGER.warn("Did not expect data at this point: {} - still trying to process!", DatatypeConverter.printHexBinary(data));
+                    try {
+                        HidDataEvent hidEvent = new HidDataEvent(this, data);
+                        LOGGER.debug("New HID event: {}", hidEvent.getHex());
+                        applicationEventPublisher.publishEvent(hidEvent);
+                    } catch (RuntimeException ex) {
+                        LOGGER.error("could not crate Event from " + DatatypeConverter.printHexBinary(data) );
+                        ex.printStackTrace();
+                    }
                     break;
             }
         }
