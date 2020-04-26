@@ -4,6 +4,8 @@ This project is a demo application for controlling a Polycom CX300 USB phone usi
 
 Detailed protocol specifications can be found at my blog post: [Reverse engineering the Polycom CX300 USB phone](https://bsmulders.com/2018/04/polycom-cx300/)
 
+My CX300 with Firmware 01.10.6.03 (used with Ubuntu 18.4) showed some differences in the protocol (see 'Changes').
+
 ## Changes
 This fork has following changes:
 
