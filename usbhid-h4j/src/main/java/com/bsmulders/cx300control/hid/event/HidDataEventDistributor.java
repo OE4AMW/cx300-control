@@ -1,5 +1,6 @@
 package com.bsmulders.cx300control.hid.event;
 
+import javax.xml.bind.DatatypeConverter;
 import org.hid4java.HidDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,9 +32,14 @@ public class HidDataEventDistributor {
             int val = hidDevice.read(data, 500);
 
             if (val > 0) {
-                HidDataEvent hidEvent = new HidDataEvent(this, data);
-                LOGGER.debug("New HID event: {}", hidEvent.getHex());
-                applicationEventPublisher.publishEvent(hidEvent);
+                try {
+                    HidDataEvent hidEvent = new HidDataEvent(this, data);
+                    LOGGER.debug("New HID event: {}", hidEvent.getHex());
+                    applicationEventPublisher.publishEvent(hidEvent);
+                } catch (RuntimeException ex) {
+                    LOGGER.error("could not crate Event from " + DatatypeConverter.printHexBinary(data) );
+                    ex.printStackTrace();
+                }
             } else if (val < 0) {
                 listening = false;
             }

@@ -12,6 +12,8 @@ This fork has following changes:
 * adds support for international (non-ASCII) characters on the display
 * recognizes keys when handset is lifted
 * handles the message when mic-input is selected (maybe a speciality of linux, or firmware version)
+* adds red/orange status-LED
+
 
 
 ## Usage
