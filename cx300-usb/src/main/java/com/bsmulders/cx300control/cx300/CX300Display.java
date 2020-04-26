@@ -5,6 +5,8 @@ import java.util.Iterator;
 import com.bsmulders.cx300control.hid.HidService;
 import com.google.common.base.Splitter;
 
+import java.nio.charset.StandardCharsets;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -98,11 +100,16 @@ public class CX300Display {
 
     private void fillTemplate(byte[] template, String input) {
         if (input.length() <= 8) {
-            byte[] inputBytes = input.getBytes();
-            byte[] spacedBytes = new byte[inputBytes.length * 2];
-            for (int i = 0; i < inputBytes.length; i++) {
-                spacedBytes[i * 2] = inputBytes[i];
-                spacedBytes[(i * 2) + 1] = 0x00;
+            
+            byte[] spacedBytes = new byte[input.length() * 2];
+            for (int i = 0; i < input.length(); i++) {
+                byte[] inputBytes = input.substring(i, i+1).getBytes(StandardCharsets.UTF_16LE);
+                spacedBytes[i * 2] = inputBytes[0];
+                if (inputBytes.length > 1) {
+                    spacedBytes[(i * 2) + 1] = inputBytes[1];
+                } else {
+                    spacedBytes[(i * 2) + 1] = 0x00;
+                }
             }
 
             System.arraycopy(spacedBytes, 0, template, 2, spacedBytes.length);
