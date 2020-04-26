@@ -13,7 +13,7 @@ public class CX300Status {
     private static final byte SIGN_IN = 0x00;
     private static final byte AVAILABLE = 0x01;
     private static final byte BUSY = 0x03;
-    private static final byte BE_RIGHT_BACK = 0x05;
+    private static final byte BE_RIGHT_BACK = 0x04;
     private static final byte AWAY = 0x05;
     private static final byte DO_NOT_DISTURB = 0x06;
     private static final byte OFF_WORK = 0x07;
