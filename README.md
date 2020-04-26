@@ -10,6 +10,8 @@ My CX300 with Firmware 01.10.6.03 (used with Ubuntu 18.4) showed some difference
 This fork has following changes:
 
 * adds support for international (non-ASCII) characters on the display
+* recognizes keys when handset is lifted
+
 
 
 ## Usage
