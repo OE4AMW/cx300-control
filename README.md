@@ -9,12 +9,14 @@ My CX300 with Firmware 01.10.6.03 (used with Ubuntu 18.4) showed some difference
 ## Changes
 This fork has following changes:
 
+* compiles on ubuntu with java 11
 * adds support for international (non-ASCII) characters on the display (it seems that the phone supports UTF16)
-* recognizes keys when handset is lifted
-* handles the message when mic-input is selected (maybe a speciality of linux, or firmware version)
+* recognizes keys also when handset is lifted
+* handles message when mic-input is selected (maybe a speciality of linux, or firmware version)
 * tried to add robustness against unknown messages and device errors
 * adds voicemail-LED
 * adds additional colors to the status-LEDs
+* simulates a keyboard! (requires linux and xdotool)
 
 
 ## Usage
