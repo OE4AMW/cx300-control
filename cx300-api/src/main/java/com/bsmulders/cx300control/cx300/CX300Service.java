@@ -6,7 +6,9 @@ import org.springframework.stereotype.Component;
 public interface CX300Service {
 
     enum Status {
-        SIGN_IN, AVAILABLE, BUSY, BE_RIGHT_BACK, AWAY, DO_NOT_DISTURB, OFF_WORK
+        SIGN_IN, AVAILABLE, BUSY, BE_RIGHT_BACK, AWAY, DO_NOT_DISTURB, OFF_WORK,
+        COLOR_GREEN, COLOR_RED, COLOR_ORANGE_RED, COLOR_ORANGE, COLOR_GREEN_ORANGE, 
+        COLOR_MIX_ORANGE_RED, COLOR_MIX_YELLOW_GREEN, COLOR_RED_GREEN, COLOR_MIX_YELLOW_ORANGE
     }
 
     enum Language {
@@ -67,6 +69,16 @@ public interface CX300Service {
      */
     void setStatus(Status status, boolean microphone);
 
+    /**
+     * Set the status of the phone, according to Skype status types. Also set the microphone on or off (including the LED)
+     * Will light up the presence LED on some status
+     *
+     * @param status The status to switch to
+     * @param microphone If the microphone should be enabled or not
+     * @param voicemail If the voicemail-LED should be enabled or not
+     */
+    void setStatus(Status status, boolean microphone, boolean voicemail);
+    
     /**
      * Enable speakerphone and light up LED
      */

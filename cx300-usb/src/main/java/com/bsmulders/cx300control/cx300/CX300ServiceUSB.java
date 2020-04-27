@@ -56,6 +56,11 @@ public class CX300ServiceUSB implements CX300Service {
     }
 
     @Override
+    public void setStatus(Status status, boolean microphone, boolean voicemail) {
+        cx300Status.setStatus(status, microphone, voicemail);
+    }
+
+    @Override
     public void enableSpeakerphone() {
         cx300Speakerphone.enable();
     }

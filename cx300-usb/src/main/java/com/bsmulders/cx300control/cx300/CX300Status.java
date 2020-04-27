@@ -1,6 +1,9 @@
 package com.bsmulders.cx300control.cx300;
 
 import com.bsmulders.cx300control.hid.HidService;
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,66 +23,79 @@ public class CX300Status {
 
     private static final byte MICROPHONE_ON = 0x10;
     private static final byte MICROPHONE_OFF = 0x30;
+    
+    private static final byte COLOR_GREEN = 0x01;
+    private static final byte COLOR_RED = 0x03;
+    private static final byte COLOR_ORANGE_RED = 0x04;
+    private static final byte COLOR_ORANGE = 0x05;
+    private static final byte COLOR_GREEN_ORANGE = 0x08;
+    private static final byte COLOR_MIX_ORANGE_RED = 0x0A;
+    private static final byte COLOR_MIX_YELLOW_GREEN = 0x0B;
+    private static final byte COLOR_RED_GREEN = 0x0C;
+    private static final byte COLOR_MIX_YELLOW_ORANGE = 0x0E;
 
     private final HidService hidService;
 
+    private final Map<CX300Service.Status, Byte> map = new HashMap<>();
+
+    @PostConstruct
+    public void fillMap() {
+        map.put(CX300Service.Status.SIGN_IN, SIGN_IN);
+        map.put(CX300Service.Status.AVAILABLE, AVAILABLE);
+        map.put(CX300Service.Status.BUSY, BUSY);
+        map.put(CX300Service.Status.BE_RIGHT_BACK, BE_RIGHT_BACK);
+        map.put(CX300Service.Status.AWAY, AWAY);
+        map.put(CX300Service.Status.DO_NOT_DISTURB, DO_NOT_DISTURB);
+        map.put(CX300Service.Status.OFF_WORK, OFF_WORK);
+        map.put(CX300Service.Status.COLOR_GREEN, COLOR_GREEN);
+        map.put(CX300Service.Status.COLOR_RED, COLOR_RED);
+        map.put(CX300Service.Status.COLOR_ORANGE_RED, COLOR_ORANGE_RED);
+        map.put(CX300Service.Status.COLOR_ORANGE, COLOR_ORANGE);
+        map.put(CX300Service.Status.COLOR_GREEN_ORANGE, COLOR_GREEN_ORANGE);
+        map.put(CX300Service.Status.COLOR_MIX_ORANGE_RED, COLOR_MIX_ORANGE_RED);
+        map.put(CX300Service.Status.COLOR_MIX_YELLOW_GREEN, COLOR_MIX_YELLOW_GREEN);
+        map.put(CX300Service.Status.COLOR_RED_GREEN, COLOR_RED_GREEN);
+        map.put(CX300Service.Status.COLOR_MIX_YELLOW_ORANGE, COLOR_MIX_YELLOW_ORANGE);
+    }
+    
     @Autowired
     public CX300Status(HidService hidService) {
         this.hidService = hidService;
     }
 
-    void setStatus(CX300Service.Status status) {
-        switch (status) {
-            case SIGN_IN:
-                set(SIGN_IN);
-                break;
-            case AVAILABLE:
-                set(AVAILABLE);
-                break;
-            case BUSY:
-                set(BUSY);
-                break;
-            case BE_RIGHT_BACK:
-                set(BE_RIGHT_BACK);
-                break;
-            case AWAY:
-                set(AWAY);
-                break;
-            case DO_NOT_DISTURB:
-                set(DO_NOT_DISTURB);
-                break;
-            case OFF_WORK:
-                set(OFF_WORK);
-                break;
+    void setStatus(CX300Service.Status status ) {
+        byte statusByte = 0x00;
+        try {
+            statusByte = map.get(status);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        set(statusByte);
     }
 
-    void setStatus(CX300Service.Status status, boolean microphone) {
+    void setStatus(CX300Service.Status status, boolean microphone ) {
         byte microphoneData = microphone ? MICROPHONE_ON : MICROPHONE_OFF;
-
-        switch (status) {
-            case SIGN_IN:
-                set(SIGN_IN, microphoneData);
-                break;
-            case AVAILABLE:
-                set(AVAILABLE, microphoneData);
-                break;
-            case BUSY:
-                set(BUSY, microphoneData);
-                break;
-            case BE_RIGHT_BACK:
-                set(BE_RIGHT_BACK, microphoneData);
-                break;
-            case AWAY:
-                set(AWAY, microphoneData);
-                break;
-            case DO_NOT_DISTURB:
-                set(DO_NOT_DISTURB, microphoneData);
-                break;
-            case OFF_WORK:
-                set(OFF_WORK, microphoneData);
-                break;
+        byte statusByte = 0x00;
+        try {
+            statusByte = map.get(status);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        set(statusByte, microphoneData);
+    }
+    
+    void setStatus(CX300Service.Status status, boolean microphone, boolean voicemail) {
+        byte microphoneData = microphone ? MICROPHONE_ON : MICROPHONE_OFF;
+        if (voicemail) {
+            microphoneData += 0x02;
+        }
+        byte statusByte = 0x00;
+        try {
+            statusByte = map.get(status);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        set(statusByte, microphoneData);
     }
 
     private void set(byte status) {
@@ -89,4 +105,5 @@ public class CX300Status {
     private void set(byte status, byte microphone) {
         hidService.sendMessage(new byte[]{GROUP, status, microphone});
     }
+
 }
