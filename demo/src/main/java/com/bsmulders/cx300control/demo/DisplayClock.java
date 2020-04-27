@@ -28,6 +28,7 @@ public class DisplayClock {
                                  .withNano(0);
 
         cx300Service.setDisplayText("Time: ", now.format(ISO_LOCAL_TIME));
+        cx300Service.setStatus(CX300Service.Status.COLOR_GREEN_ORANGE, true, true);
     }
 
     @PreDestroy
