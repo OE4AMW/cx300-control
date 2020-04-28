@@ -26,3 +26,15 @@ To start the project, use the spring-boot-maven-plugin in the terminal:
     mvn spring-boot:run
 
 The application will start and display a clock on the plugged-in Polycom CX300 phone. Keypresses and audio state are written to the console.
+If xdotool is installed, keypress-events are sent to the X-server - the CX300 acts as a numeric keypad!
+
+## Use as non-root
+Copy
+
+    99-myhid.rules
+
+to
+
+    /etc/udev/rules.d/
+
+and make sure that your user is the group 'plugdev'.

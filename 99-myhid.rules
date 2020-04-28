@@ -1,0 +1,2 @@
+# Polycom CX300
+ATTRS{idProduct}=="9201", ATTRS{idVendor}=="095d", MODE="0660", GROUP="plugdev"
