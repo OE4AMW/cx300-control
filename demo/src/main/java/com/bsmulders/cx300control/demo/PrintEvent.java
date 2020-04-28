@@ -7,11 +7,32 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
+import javax.annotation.PostConstruct;
 
 @Component
 public class PrintEvent implements ApplicationListener<CX300Event> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PrintEvent.class);
+    
+    private boolean xdoTool = false;
+    
+    @PostConstruct
+    public void checkXdotool() {
+        try {
+            Process proc = Runtime.getRuntime().exec("xdotool -h");
+            proc.waitFor();
+            if (proc.exitValue() == 0) {
+                xdoTool = true;
+                LOGGER.info("xdotool available - keyboard-simulation enabled");
+            } else {
+                LOGGER.warn("xdotool NOT available - keyboard-simulation disabled");
+            }
+        } catch (IOException ex) {
+            LOGGER.error("Exec-error occured", ex);
+        } catch (InterruptedException ex) {
+            LOGGER.error("Exec interrupted", ex);
+        }
+    }
 
     @Override
     public void onApplicationEvent(CX300Event cx300Event) {
@@ -70,10 +91,12 @@ public class PrintEvent implements ApplicationListener<CX300Event> {
     }
     
     private void keyPress(String key) {
-        try {
-            Runtime.getRuntime().exec("xdotool key " + key);
-        } catch (IOException ex) {
-            LOGGER.error("xdotool exec error!", ex);
+        if (xdoTool) {
+            try {
+                Runtime.getRuntime().exec("xdotool key " + key);
+            } catch (IOException ex) {
+                LOGGER.error("xdotool exec error!", ex);
+            }
         }
     }
 }
